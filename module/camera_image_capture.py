@@ -24,50 +24,45 @@ class MyVideoCapture:
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.captured_img: np.ndarray | None = None
+        
+        if not self.cap.isOpened():
+             print("エラー: カメラを開けませんでした。")
 
-    def run(self) -> None:
-        """カメラ映像を取得してリアルタイムに加工・表示する。
+    # run()は削除しました
 
-        処理の流れ:
-            1. カメラから1フレームを取得。
-            2. 取得した画像をコピーして加工（中心に赤いターゲットマークを描画）。
-            3. 加工後の画像を左右反転して表示。
-            4. 'q' キーが押されるまで処理を継続。
-
-        Notes:
-            - フレームの読み込みに失敗した場合（ret=False）、ループを終了する。
-            - 終了時には最後にキャプチャした画像を `captured_img` に保持する。
+    def get_and_show_frame(self) -> np.ndarray | None:
+        """カメラから1フレームを取得し、加工して表示するための画像を返す。
+        
+        Returns:
+            np.ndarray | None: 加工後の画像。読み込みに失敗した場合は None。
         """
-        while True:
-            # カメラ画像を１枚キャプチャする
-            ret, frame = self.cap.read()
+        ret, frame = self.cap.read()
+        
+        if not ret:
+            self.captured_img = None
+            return None 
 
-            # リターンコードがFalseなら終了
-            if not ret:
-                break
+        # オリジナルのフレームを保持 (get_img()で取得するため)
+        self.captured_img: np.ndarray = frame 
 
-            # 加工するともとの画像が保存できないのでコピーを生成
-            img: np.ndarray = np.copy(frame)
+        # 加工するともとの画像が保存できないのでコピーを生成
+        img: np.ndarray = np.copy(frame)
 
-            # 画像の中心を示すターゲットマークを描画
-            rows, cols, _ = img.shape
-            center = (int(cols / 2), int(rows / 2))
-            img = cv2.circle(img, center, 30, (0, 0, 255), 3)
-            img = cv2.circle(img, center, 60, (0, 0, 255), 3)
-            img = cv2.line(img, (center[0], center[1] - 80), (center[0], center[1] + 80), (0, 0, 255), 3)
-            img = cv2.line(img, (center[0] - 80, center[1]), (center[0] + 80, center[1]), (0, 0, 255), 3)
+        # 画像の中心を示すターゲットマークを描画
+        rows, cols, _ = img.shape
+        center = (int(cols / 2), int(rows / 2))
+        
+        # ターゲットマークの描画 (赤: (0, 0, 255))
+        img = cv2.circle(img, center, 30, (0, 0, 255), 3)
+        img = cv2.circle(img, center, 60, (0, 0, 255), 3)
+        img = cv2.line(img, (center[0], center[1] - 80), (center[0], center[1] + 80), (0, 0, 255), 3)
+        img = cv2.line(img, (center[0] - 80, center[1]), (center[0] + 80, center[1]), (0, 0, 255), 3)
 
-            # 左右反転（顔を撮るときは左右反転しておくとよい）
-            img = cv2.flip(img, flipCode=1)
-
-            # 加工した画像を表示
-            cv2.imshow('frame', img)
-
-            # 次の画像を処理するまでに時間間隔（msec）を空ける
-            # キーボードの'q'が押されたら終了
-            if cv2.waitKey(self.DELAY) & 0xFF == ord('q'):
-                self.captured_img = frame
-                break
+        # 左右反転
+        img = cv2.flip(img, flipCode=1)
+        
+        return img
+    
 
     def get_img(self) -> np.ndarray | None:
         """最後にキャプチャされた画像を取得する。
@@ -96,9 +91,3 @@ class MyVideoCapture:
         if hasattr(self, 'cap') and self.cap.isOpened():
             self.cap.release()
         cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    app = MyVideoCapture()
-    app.run()
-    app.write_img()
