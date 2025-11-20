@@ -44,33 +44,11 @@ class MainMenuWidget(QWidget):
         main_layout.addStretch()
         
     def set_composite_status(self, is_available: bool):
-        # 🌟 ここでボタンの有効化とステータスラベルの更新を行っている
         self.composite_button.setEnabled(is_available)
         if is_available:
             self.status_label.setText("画像: あり ")
         else:
             self.status_label.setText("画像: なし")
-class MockWidget(QWidget):
-
-    def __init__(self, screen_name: str, main_window: QMainWindow, parent=None):
-        super().__init__(parent)
-        self.screen_name = screen_name
-        self.main_window = main_window
-        self.layout = QVBoxLayout(self)
-
-        self.label = QLabel(f"--- {self.screen_name} 画面 ---")
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setStyleSheet("font-size: 20pt; color: blue;")
-
-        self.back_button = QPushButton("メニューに戻る")
-        if screen_name == "写真撮影":
-            self.back_button.clicked.connect(self.main_window.sim_capture_and_show_menu)
-        else:
-            self.back_button.clicked.connect(self.main_window.show_menu)
-
-        self.layout.addWidget(self.label)
-        self.layout.addStretch()
-        self.layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
 class MainWindow(QMainWindow):
 
@@ -85,8 +63,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stacked_widget)
 
         self.menu_widget = MainMenuWidget(self)
-        self.camera_widget = MockWidget("写真撮影", self) 
-        self.composite_widget = MockWidget("画像合成", self) 
+        self.camera_widget =
+        self.composite_widget =
 
         self.stacked_widget.addWidget(self.menu_widget)    # Index 0
         self.stacked_widget.addWidget(self.camera_widget)  # Index 1
@@ -96,7 +74,6 @@ class MainWindow(QMainWindow):
 
     def show_menu(self):
         """メインメニュー画面を表示する (Index 0)。"""
-        # 🌟 メニュー表示時に、キャプチャ状態に基づいてメニューウィジェットを更新
         self.stacked_widget.setCurrentIndex(0)
         self.menu_widget.set_composite_status(self.has_captured_frame)
 
@@ -110,9 +87,7 @@ class MainWindow(QMainWindow):
             self.stacked_widget.setCurrentIndex(2)
 
     def sim_capture_and_show_menu(self):
-        # 🌟 模擬キャプチャ後、フラグをTrueに設定
         self.has_captured_frame = True 
-        # 🌟 show_menu()を呼ぶことで、上記のロジックによりメニューが更新される
         self.show_menu()
 
 if __name__ == "__main__":
