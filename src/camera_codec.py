@@ -92,5 +92,14 @@ def camera_codec() -> np.ndarray | None:
                 
     finally:
         app.__del__() 
-        
+    
+    if captured_frame is not None:
+        filepath = 'output_images/captured.png'
+
+        try:
+            cv2.imwrite(filepath, captured_frame)
+            print(f"写真を '{filepath}' に保存しました。")
+        except cv2.error as e:
+            print("エラー: 画像の保存に失敗しました。")
+            print(f"ディレクトリ 'output_images' が存在するか確認してください。詳細: {e}")
     return captured_frame
