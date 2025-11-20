@@ -1,6 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QVBoxLayout,QHBoxLayout, QPushButton, QLabel, QStackedWidget, QGroupBox
 from PySide6.QtCore import Qt
+from .camera_codec import camera_codec
+from.merge_window import CompositeWindow
 
 class MainMenuWidget(QWidget):
     
@@ -57,18 +59,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("カメラ/合成アプリ")
         self.setGeometry(100, 100, 800, 600)
         
-        self.has_captured_frame: bool = False 
+        self.has_captured_frame: bool = True
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
         self.menu_widget = MainMenuWidget(self)
-        self.camera_widget =
-        self.composite_widget =
 
         self.stacked_widget.addWidget(self.menu_widget)    # Index 0
-        self.stacked_widget.addWidget(self.camera_widget)  # Index 1
-        self.stacked_widget.addWidget(self.composite_widget) # Index 2
 
         self.show_menu()
 
@@ -80,11 +78,15 @@ class MainWindow(QMainWindow):
     def show_camera(self):
         """写真撮影画面を表示する (Index 1)。"""
         self.stacked_widget.setCurrentIndex(1)
+        self.camera_widget = camera_codec()
         
     def show_composite(self):
         """画像合成画面を表示する (Index 2)。"""
         if self.has_captured_frame:
+            self.composite_widget = CompositeWindow()
             self.stacked_widget.setCurrentIndex(2)
+            self.stacked_widget.addWidget(self.composite_widget)
+            self.stacked_widget.setCurrentWidget(self.composite_widget)
 
     def sim_capture_and_show_menu(self):
         self.has_captured_frame = True 

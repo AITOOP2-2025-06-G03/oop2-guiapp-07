@@ -24,7 +24,7 @@ def composite_image(base_img, capture_img):
 class CompositeWindow(QWidget):
     """画像合成プレビュー＆保存ウィンドウ"""
 
-    def __init__(self, base_img_path="images/google.png", capture_img_path=None):
+    def __init__(self, base_img_path="images/google.png", capture_img_path="output_images/captured.png"):
         super().__init__()
         self.setWindowTitle("画像合成プレビュー")
 
